@@ -23,8 +23,8 @@ public class BackupByTag implements SpiderClawering
 		// TODO Auto-generated method stub
 		//Spider.articleTag=tagStr;
 		final BlogInfo blogInfo=new BlogInfo();//which store the relevant information of the blog
-		String url=ParseTool.getUrlFromTag(urlStr, tagStr,blogInfo);
 		blogInfo.setArticleTag(tagStr);//it will be used during the backup progress 
+		String url=ParseTool.getUrlFromTag(urlStr, tagStr,blogInfo);
 		Spider.spiderClawering(url,blogInfo);
 	}
 

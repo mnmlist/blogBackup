@@ -16,41 +16,118 @@ import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.Span;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
+import org.htmlparser.util.SimpleNodeIterator;
 
 /**
  * @author mnmlist@163.com
  * @blog http://blog.csdn.net/mnmlist
  * @version v1.0
  */
-public class ParseTool {
+/**
+ * @author Sting
+ *
+ */
+/**
+ * @author Sting
+ *
+ */
+/**
+ * @author Sting
+ *
+ */
+/**
+ * @author Sting
+ *
+ */
+public class ParseTool
+{
 	/*
 	 * @param url html页面url
 	 * 
 	 * @param tagNameFilter tagName of a filter
-	 *
+	 * 
 	 * @param attributeKey 标签名
-	 *
+	 * 
 	 * @param attributeValue 标签值
 	 * 
 	 * @return 返回某个结点的子节点,如果标签名为article_title，直接返回标签名为article_title对应的所有结点
 	 */
 	public static NodeList getNodeList(String url, String tagNameFilter,
-			String attributeKey, String attributeValue) {
+			String attributeKey, String attributeValue)
+	{
 		Parser parser = ParserInstance.getParserInstance(url);
 		NodeFilter andFilter = new AndFilter(new TagNameFilter(tagNameFilter),
 				new HasAttributeFilter(attributeKey, attributeValue));
 		NodeList list = null;
-		try {
+		try
+		{
 			list = parser.extractAllNodesThatMatch(andFilter);
-		} catch (ParserException e) {
-			// TODO Auto-generated catch block
+		} catch (ParserException e)
+		{
+			e.printStackTrace();
+		}
+		NodeList nlist = null;
+		//System.out.println(list.size());
+		if (list.size() > 0)
+		{
+			if (attributeValue.equals("article_title"))
+				return list;
+			nlist = list.elementAt(0).getChildren();
+		}
+		return nlist;
+	}
+	
+	
+	/**
+	 * @param url html页面url
+	 * @param tagNameFilter tagName of a filter
+	 * @param attributeKey 标签名
+	 * @param attributeValue 标签值
+	 * @return 返回文章标签下面的子节点
+	 * 用来获取tagName对应的网址,由于文章标签和专栏使用的是<div id="panel_Category">,所以会
+	 * 获得不止一个元素，这里需要特别留意一下
+	 */
+	public static NodeList getNodeLists(String url, String tagNameFilter,
+			String attributeKey, String attributeValue)
+	{
+		Parser parser = ParserInstance.getParserInstance(url);
+		NodeFilter andFilter = new AndFilter(new TagNameFilter(tagNameFilter),
+				new HasAttributeFilter(attributeKey, attributeValue));
+		NodeList list = null;
+		try
+		{
+			list = parser.extractAllNodesThatMatch(andFilter);
+		} catch (ParserException e)
+		{
 			e.printStackTrace();
 		}
 		NodeList nlist = null;
 		if (list.size() > 0)
-			if(attributeValue.equals("article_title"))
-			return list;
-			nlist = list.elementAt(0).getChildren();
+		{
+			nlist = choooseOneNodeList(list);//用来获取tagName对应的网址,由于文章标签和专栏使用的是<div id="panel_Category">,所以会
+			//获得不止一个元素，这里需要特别留意一下
+		}
+		return nlist;
+	}
+	
+	/**
+	 * @param list 可能包括专栏和博客分类两种节点，所以还需要做选择
+	 * @return 某个博客分类所在的网址
+	 */
+	public static NodeList choooseOneNodeList(NodeList list)
+	{
+		NodeList nlist = null;
+		int listSize=list.size();
+		for(int i=0;i<listSize;i++)
+		{
+			Node node=list.elementAt(i);
+			NodeList childrenList=node.getChildren();
+			//可以通过node.getChildren()获取node的所有子节点
+			//然后再用toString()打印出所有的子节点，然后用下面的方法获得相应的节点的值
+			String string=childrenList.elementAt(1).getFirstChild().getFirstChild().toPlainTextString();
+			if(string.equals("文章分类"))//过滤掉博客专栏
+				return node.getChildren();
+		}
 		return nlist;
 	}
 	/*
@@ -60,49 +137,56 @@ public class ParseTool {
 	 * 
 	 * @return 某类别对应的url
 	 */
-	public static String getUrlFromTag(String urlString,String tagString,BlogInfo blogInfo)
+	public static String getUrlFromTag(String urlString, String tagString,
+			BlogInfo blogInfo)
 	{
-		NodeList nList=ParseTool.getNodeList(urlString,"div","id","panel_Category");
-    	NodeFilter andFilter = new AndFilter(new TagNameFilter("ul"),
+		NodeList nList = ParseTool.getNodeLists(urlString, "div", "id",
+				"panel_Category");
+		NodeFilter andFilter = new AndFilter(new TagNameFilter("ul"),
 				new HasAttributeFilter("class", "panel_body"));
-    	nList=nList.extractAllNodesThatMatch(andFilter);
-    	nList=nList.elementAt(0).getChildren();
-		boolean flag=ParseTool.parseUrl(nList,tagString,blogInfo);
-		if(flag)
+		nList = nList.extractAllNodesThatMatch(andFilter);
+		nList = nList.elementAt(0).getChildren();
+		boolean flag = ParseTool.parseUrl(nList, tagString, blogInfo);
+		if (flag)
 			return blogInfo.getTagCorrespondedURL();
 		return null;
 	}
+
 	/*
 	 * @param nlist 博客目录的子标签链表
 	 * 
 	 * @param tag 博客文章的某个类别
 	 */
-	public static boolean parseUrl(NodeList nList,String tag,BlogInfo blogInfo)
-    {
-    	int size=nList.size();
-    	boolean flag=false;
-    	for(int j=0;j<size;j++)
+	public static boolean parseUrl(NodeList nList, String tag, BlogInfo blogInfo)
+	{
+		int size = nList.size();
+		boolean flag = false;
+		for (int j = 0; j < size; j++)
 		{
-			Node atls=nList.elementAt(j);
-			if (atls instanceof LinkTag) {
+			Node atls = nList.elementAt(j);
+			if (atls instanceof LinkTag)
+			{
 				LinkTag link = (LinkTag) atls;
-				if(link.getLinkText().equals(tag))
+				if (link.getLinkText().equals(tag))
 				{
-					blogInfo.setTagCorrespondedURL(link.extractLink());//获得tag对应的url
-					flag=true;
+					blogInfo.setTagCorrespondedURL(link.extractLink());// 获得tag对应的url
+					flag = true;
 					break;
 				}
-			}else {
+			} else
+			{
 				NodeList slist = atls.getChildren();
-				if (slist != null && slist.size() > 0) {
-					flag=parseUrl(slist,tag,blogInfo);
-					if(flag)
+				if (slist != null && slist.size() > 0)
+				{
+					flag = parseUrl(slist, tag, blogInfo);
+					if (flag)
 						break;
 				}
 			}
 		}
-    	return flag;
-    }
+		return flag;
+	}
+
 	/*
 	 * @param nlist HTML正文的子标签链表
 	 * 
@@ -110,31 +194,40 @@ public class ParseTool {
 	 * 
 	 * @return 当前的图片数
 	 */
-	public static int parseImg(NodeList nlist, int index,final BlogInfo blogInfo) {
-		String path=blogInfo.getNewArticlePath();
+	public static int parseImg(NodeList nlist, int index,
+			final BlogInfo blogInfo)
+	{
+		String path = blogInfo.getNewArticlePath();
 		Node img = null;
 		int count = nlist.size();
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++)
+		{
 			img = nlist.elementAt(i);
-			if (img instanceof ImageTag) {
+			if (img instanceof ImageTag)
+			{
 				ImageTag imgtag = (ImageTag) img;
-				if (!imgtag.isEndTag()) {
+				if (!imgtag.isEndTag())
+				{
 					/* 将图片的URL映射成本地路径 */
-					blogInfo.getImageResourceList().add(new Attribute("" + index,
-							new String(imgtag.extractImageLocn().getBytes())));
+					blogInfo.getImageResourceList().add(
+							new Attribute("" + index, new String(imgtag
+									.extractImageLocn().getBytes())));
 					imgtag.setImageURL(path + "_files/" + index + ".gif");
 					/* 递增本地路径序列 */
 					index++;
 				}
-			} else {
+			} else
+			{
 				NodeList slist = img.getChildren();
-				if (slist != null && slist.size() > 0) {
-					index = ParseTool.parseImg(slist, index,blogInfo);
+				if (slist != null && slist.size() > 0)
+				{
+					index = ParseTool.parseImg(slist, index, blogInfo);
 				}
 			}
 		}
 		return index;
 	}
+
 	/*
 	 * @param nlist HTML每月份存档的子标签链表
 	 * 
@@ -142,25 +235,33 @@ public class ParseTool {
 	 * 
 	 * @return 无用
 	 */
-	public static void parsePerArticle(NodeList nlist,BlogInfo blogInfo) {
+	public static void parsePerArticle(NodeList nlist, BlogInfo blogInfo)
+	{
 		Node atl = null;
 		int count = nlist.size();
-		for (int i = 1; i < count; i+=2) {
+		for (int i = 1; i < count; i += 2)
+		{
 			atl = nlist.elementAt(i);
-			if (atl instanceof Span) {
+			if (atl instanceof Span)
+			{
 				Span span = (Span) atl;
 				if (span.getAttribute("class") != null
 						&& span.getAttribute("class").equalsIgnoreCase(
-								"link_title")) {
+								"link_title"))
+				{
 					LinkTag link = (LinkTag) span.childAt(0);
-					String urlDescripString=link.getLinkText().trim().replaceAll("[\\?/:*|<>\"]","_");
-					blogInfo.getColumArticleList().add(new Attribute(urlDescripString, "http://blog.csdn.net"
-							+ link.extractLink()));
+					String urlDescripString = link.getLinkText().trim()
+							.replaceAll("[\\?/:*|<>\"]", "_");
+					blogInfo.getColumArticleList()
+							.add(new Attribute(urlDescripString,
+									"http://blog.csdn.net" + link.extractLink()));
 				}
-			} else {
+			} else
+			{
 				NodeList slist = atl.getChildren();
-				if (slist != null && slist.size() > 0) {
-					parsePerArticle(slist,blogInfo);
+				if (slist != null && slist.size() > 0)
+				{
+					parsePerArticle(slist, blogInfo);
 				}
 			}
 		}
@@ -173,21 +274,27 @@ public class ParseTool {
 	 * 
 	 * @return 无用
 	 */
-	public static void parsePage(NodeList nlist,BlogInfo blogInfo) {// from parseMonth
+	public static void parsePage(NodeList nlist, BlogInfo blogInfo)
+	{// from parseMonth
 		Node pg = null;
 		int count = nlist.size();
-		for (int i = 0; i < count; i++) {
+		for (int i = 0; i < count; i++)
+		{
 			pg = nlist.elementAt(i);
-			if (pg instanceof LinkTag) {
+			if (pg instanceof LinkTag)
+			{
 				LinkTag lt = (LinkTag) pg;
-				if (lt.getLinkText().equalsIgnoreCase("下一页")) {
+				if (lt.getLinkText().equalsIgnoreCase("下一页"))
+				{
 					String url = "http://blog.csdn.net" + lt.extractLink();
-					NodeList titleList =getNodeList(url, "div", "id", "article_list");
-					parsePerArticle(titleList,blogInfo);
-					NodeList fenYeList = getNodeList(url, "div", "id", "papelist");
-					if(fenYeList!=null)
-						parsePage(fenYeList,blogInfo);
-					else 
+					NodeList titleList = getNodeList(url, "div", "id",
+							"article_list");
+					parsePerArticle(titleList, blogInfo);
+					NodeList fenYeList = getNodeList(url, "div", "id",
+							"papelist");
+					if (fenYeList != null)
+						parsePage(fenYeList, blogInfo);
+					else
 						break;
 				}
 			}
@@ -204,27 +311,33 @@ public class ParseTool {
 	 * @return 无
 	 */
 	public static void parseColums(String filepath, String url,
-			AttributeList articles,BlogInfo blogInfo) {
-		NodeList titleList = getNodeList(url, "div", "id", "article_list");//list view
-		int size=titleList.size();
-		for(int i=1;i<size;i+=2)
+			AttributeList articles, BlogInfo blogInfo)
+	{
+		NodeList titleList = getNodeList(url, "div", "id", "article_list");// list
+																			// view
+		int size = titleList.size();
+		for (int i = 1; i < size; i += 2)
 		{
-			NodeList sList=titleList.elementAt(i).getChildren();
-			sList=sList.elementAt(1).getChildren();//article title的子节点
-			parsePerArticle(sList,blogInfo);
+			NodeList sList = titleList.elementAt(i).getChildren();
+			sList = sList.elementAt(1).getChildren();// article title的子节点
+			parsePerArticle(sList, blogInfo);
 		}
 		NodeList fenYeList = getNodeList(url, "div", "id", "papelist");
 		if (fenYeList != null)
-			parsePage(fenYeList,blogInfo);
+			parsePage(fenYeList, blogInfo);
 		/* 慢一点，否则会被认为是恶意行为 */
-		List<Attribute> li =blogInfo.getColumArticleList().asList();
-		for (int i = 0; i < li.size(); i++) {
-			String titleName=(String)li.get(i).getName();
-			HandleTool.handleHtml(titleName, (String) li.get(i).getValue(),blogInfo);
-			try {
+		List<Attribute> li = blogInfo.getColumArticleList().asList();
+		for (int i = 0; i < li.size(); i++)
+		{
+			String titleName = (String) li.get(i).getName();
+			HandleTool.handleHtml(titleName, (String) li.get(i).getValue(),
+					blogInfo);
+			try
+			{
 				/* 慢一点，否则会被认为是恶意行为 */
 				Thread.sleep(500);
-			} catch (Exception e) {
+			} catch (Exception e)
+			{
 				e.printStackTrace();
 			}
 		}
