@@ -24,13 +24,14 @@ public class HandleTool {
 	 * 
 	 * @param articles 保存本月存档的列表
 	 */
-	public static void handleHtml(String titleName, String url,final BlogInfo blogInfo) {// 用户名/月份，月份的url或文章的url，文章的列表
-		
+	public static String handleHtml(String titleName, String url,final BlogInfo blogInfo) {// 用户名/月份，月份的url或文章的url，文章的列表
+		StringBuilder text=null;
+		String htmlString=null;
 		String pathName=blogInfo.getBlogImgDir()+"/"+titleName;//存放图片和html
 		blogInfo.setNewArticlePath(titleName);
 		blogInfo.setDirPath("ByMnmlist"+"/"+titleName);
 		try {
-			StringBuffer text = new StringBuffer();
+			text = new StringBuilder();
 			Parser parser=ParserInstance.getParserInstance(url);
 			NodeList nodes = parser.extractAllNodesThatMatch(new NodeFilter() {
 				@Override
@@ -75,11 +76,13 @@ public class HandleTool {
 			blogInfo.getImageResourceList().clear();
 			blogInfo.getDirIndexList().add(new Attribute(blogInfo.getDirPath(), titleName));//第一个参数为以index.html
 			//为参照文件去.html后的完整路径，第二个参数为要显示的文本
-			FileTool.writeFile(pathName+".html", text.toString().getBytes());
+			htmlString=text.toString();
+			FileTool.writeFile(pathName+".html", htmlString.getBytes());
 		} catch (Exception e) {
 			// 追加出错日志
 			e.printStackTrace();
 		}
+		return htmlString;
 	}
 	/*
 	 * @param dir 本地存档根路径名称

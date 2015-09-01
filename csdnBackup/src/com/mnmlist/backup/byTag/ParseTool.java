@@ -1,5 +1,6 @@
 package com.mnmlist.backup.byTag;
 
+import java.io.File;
 import java.util.List;
 
 import javax.management.Attribute;
@@ -313,7 +314,6 @@ public class ParseTool
 			AttributeList articles, BlogInfo blogInfo)
 	{
 		NodeList titleList = getNodeList(url, "div", "id", "article_list");// list
-																			// view
 		int size = titleList.size();
 		for (int i = 1; i < size; i += 2)
 		{
@@ -324,13 +324,20 @@ public class ParseTool
 		NodeList fenYeList = getNodeList(url, "div", "id", "papelist");
 		if (fenYeList != null)
 			parsePage(fenYeList, blogInfo);
+		StringBuilder sb = new StringBuilder();
+		/* 加入meta信息 */
+		sb.append("<html>\r\n");
+		sb.append("<head><title>" + filepath.replace('/', ' ')
+				+ "</title></head>\r\n<body <font face=\"microsoft yahei\"> >\r\n");
+		String htmlString=null;
 		/* 慢一点，否则会被认为是恶意行为 */
 		List<Attribute> li = blogInfo.getColumArticleList().asList();
 		for (int i = 0; i < li.size(); i++)
 		{
 			String titleName = li.get(i).getName();
-			HandleTool.handleHtml(titleName, (String) li.get(i).getValue(),
+			htmlString=HandleTool.handleHtml(titleName, (String) li.get(i).getValue(),
 					blogInfo);
+			sb.append(htmlString);
 			try
 			{
 				/* 慢一点，否则会被认为是恶意行为 */
@@ -339,6 +346,25 @@ public class ParseTool
 			{
 				e.printStackTrace();
 			}
+		}
+		sb.append("</body>\r\n</html>");
+		String fileNameString =filepath.replace('/', '_');
+		htmlString = sb.toString();
+		//将整个月份的文章保存于.html文件中
+		FileTool.writeFile(filepath+"/"+fileNameString + ".html", htmlString.getBytes());
+		//将整个月份的博客文章转换成pdf文件
+		try
+		{
+			//将pdf文件整合到用户名目录下的pdf子目录下
+			File file=new File(filepath);
+			file=file.getParentFile();
+			FileTool.makeDir(file.getPath()+"/pdf");
+			fileNameString=file.getPath()+"/pdf/"+fileNameString;
+			FileTool.generatePDF(htmlString,fileNameString);
+		} catch (Exception e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
