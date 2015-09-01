@@ -1,4 +1,4 @@
-package com.mnmlist.backup.byTotal.pdf;
+package com.mnmlist.backup.byTotal;
 
 public class CollectArticlesToGivenDirectory
 {

@@ -7,12 +7,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.Date;
+
+import org.zefer.pd4ml.PD4Constants;
+import org.zefer.pd4ml.PD4ML;
+import org.zefer.pd4ml.PD4PageMark;
 
 /**
  * @author mnmlist@163.com
@@ -20,6 +26,9 @@ import java.nio.ByteBuffer;
  * @version v1.0
  */
 public class FileTool {
+	static String startBeforeTitle="<html>\r\n<head><title>";
+	static String startAfterTitleString="</title></head>\r\n<body>\r\n";
+	static String endString="</body>\r\n</html>";
 	static String proxy_addr = null;
 	static int proxy_port = 3128;
 	/*
@@ -103,7 +112,24 @@ public class FileTool {
 		}
 		return true;
 	}
-
+	
+	/**
+	 * @param path the location where the html file stores
+	 * @param title the title of the html article
+	 * @param htmlString the String content of html file
+	 */
+	public static void writeFile(String path, String title,String htmlString) {
+		StringBuilder htmlStringBuilder=new StringBuilder();
+		htmlStringBuilder.append(startBeforeTitle);
+		htmlStringBuilder.append(title);
+		htmlStringBuilder.append(startAfterTitleString);
+		htmlStringBuilder.append(htmlString);
+		htmlStringBuilder.append(endString);
+		htmlString=htmlStringBuilder.toString();
+		boolean isSuccess=writeFile(path+"/"+title, htmlString.getBytes());
+		if(!isSuccess)
+			System.out.println("An error occurs when store html file to disk.");
+	}
 	/*
 	 * @param path 目录路径
 	 * 
@@ -121,6 +147,46 @@ public class FileTool {
 			return false;
 		}
 		return true;
+	}
+	/**
+	 * this method will change a html String to a pdf file named title.pdf
+	 * @param contents html String 
+	 * @param title the title of the .pdf file
+	 * @throws Exception
+	 */
+	public static void generatePDF(String contents, String title)
+			throws Exception {
+		
+		File saveFileName = new File(title + ".pdf");
+		if(!saveFileName.exists()){
+			saveFileName.createNewFile();
+		}
+		FileOutputStream fos = new FileOutputStream(saveFileName);
+		PD4ML pd4ml = new PD4ML();
+		//页眉
+		PD4PageMark headerMark = new PD4PageMark();
+		headerMark.setAreaHeight(30);
+//		headerMark.setInitialPageNumber(1);
+//		headerMark.setPagesToSkip(1);
+//		headerMark.setTitleAlignment(PD4PageMark.CENTER_ALIGN);
+		headerMark.setHtmlTemplate("By mnmlist,"+new Date().toLocaleString()); // autocompute
+		pd4ml.setPageHeader(headerMark);
+		//页脚
+		PD4PageMark footerMark = new PD4PageMark();
+		footerMark.setAreaHeight(30);
+		footerMark.setInitialPageNumber(1);
+		footerMark.setPagesToSkip(1);
+		footerMark.setPageNumberTemplate( "page: $[page]" );
+		footerMark.setPageNumberAlignment( PD4PageMark.RIGHT_ALIGN);
+		footerMark.setFont(footerMark.getFont());
+		pd4ml.setPageFooter(footerMark);
+		//选择纸张大小、字库目录、字体等
+		pd4ml.setPageSize(PD4Constants.A4);
+		pd4ml.useTTF("java:fonts", true);
+        pd4ml.setDefaultTTFs("simhei", "Georgia", "consolas"); 
+		pd4ml.enableDebugInfo();
+		pd4ml.render(new StringReader(contents), fos);
+		System.out.println("Success!");
 	}
 }
 

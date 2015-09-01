@@ -12,6 +12,7 @@ import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
 import org.htmlparser.tags.Div;
 import org.htmlparser.util.NodeList;
+import org.omg.CORBA.PUBLIC_MEMBER;
 
 /**
  * @author mnmlist@163.com
@@ -28,10 +29,12 @@ public class HandleTool {
 	 * 
 	 * @return 无
 	 */
-	public static void handleHtml(String path, String url,
+	public static String  handleHtml(String path, String url,
 			AttributeList articles,final BlogInfo blogInfo) {// 用户名/月份，月份的url或文章的url，文章的列表
+		String tileNameString=null;
+		StringBuilder text =null;
 		try {
-			StringBuffer text = new StringBuffer();
+			 text = new StringBuilder();
 			Parser parser=ParserInstance.getParserInstance(url);
 			NodeList nodes = parser.extractAllNodesThatMatch(new NodeFilter() {
 				@Override
@@ -56,11 +59,8 @@ public class HandleTool {
 			Node node = nodes.elementAt(0);
 			String title =blogInfo.getArticleTitle();//(String) ((List<Attribute>) Spider.imageResourceList.asList()).get(0).getValue();
 			String filepath = path + "/" + title;
+			tileNameString=title+".html";
 			List<Attribute> li =blogInfo.getImageResourceList().asList();
-			/* 加入meta信息 */
-			text.append(new String(
-					"<meta http-equiv=\"Content-Type\" content=\"text/html; chaset=utf-8\"/>"));
-			text.append("\r\n");
 			text.append("<h1>" + title + "</h1>");
 			text.append("\r\n");
 			if (node != null) {
@@ -81,12 +81,14 @@ public class HandleTool {
 						+ ".gif", imgString);
 			}
 			blogInfo.getImageResourceList().clear();
-			FileTool
-					.writeFile(filepath + ".html", text.toString().getBytes());
 		} catch (Exception e) {
 			// 追加出错日志
 			e.printStackTrace();
 		}
+		//存储.html文件
+		String htmlString=text.toString();
+		FileTool.writeFile(path, tileNameString, htmlString);
+		return htmlString;
 	}
 	/*
 	 * @param dir 本地存档根路径名称

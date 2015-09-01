@@ -27,6 +27,7 @@ public class Spider {
 			NodeList authorList=ParseTool.getNodeList(url, "div", "id", "blog_title");
 			String author=ParseTool.parseAuthor(authorList);
 			FileTool.makeDir(author);
+			FileTool.makeDir(author+"/pdf");
 			//get the month index
 			NodeList monthList=ParseTool.getNodeList(url, "div", "id", "archive_list");
 			ParseTool.parseMonthArticle(monthList,blogInfo);
@@ -63,21 +64,21 @@ public class Spider {
 		second=second%60;
 		System.out.println("For "+url+" the total backup time is :"+minute+" minutes,"+second+" seconds.");
 	}
-//	//the spider begins....
-//	public static void main(String[] args) {
-//		// TODO Auto-generated method stub
-//		//we can also clawer a list of URL from the bookmark
-//		/*String path="url1.txt";
-//		String html=FileTool.getFileFromDisk(path);
-//		List<String>urlList=GetURLFromBookmark.getURL(html);
-//		int len=urlList.size();
-//		for(int i=0;i<len;i++)
-//			Spider.spiderClawering(urlList.get(i));
-//		*/
-//		//to simplyfy the demo,we clawer the blog from the url given as below.
-//		Spider.spiderClawering("http://blog.csdn.net/fumier");
-//		
-//		
-//	}
+	//the spider begins....
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		//we can also clawer a list of URL from the bookmark
+		/*String path="url1.txt";
+		String html=FileTool.getFileFromDisk(path);
+		List<String>urlList=GetURLFromBookmark.getURL(html);
+		int len=urlList.size();
+		for(int i=0;i<len;i++)
+			Spider.spiderClawering(urlList.get(i));
+		*/
+		//to simplyfy the demo,we clawer the blog from the url given as below.
+		Spider.spiderClawering("http://blog.csdn.net/mnmlist",new BlogInfo());
+		
+		
+	}
 
 }
