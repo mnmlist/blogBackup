@@ -5,8 +5,6 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 
 import javax.management.Attribute;
-import javax.management.AttributeList;
-
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
@@ -35,6 +33,7 @@ public class HandleTool {
 			StringBuffer text = new StringBuffer();
 			Parser parser=ParserInstance.getParserInstance(url);
 			NodeList nodes = parser.extractAllNodesThatMatch(new NodeFilter() {
+				@Override
 				public boolean accept(Node node) {
 					if (node instanceof Div) {
 						Div dv = (Div) node;

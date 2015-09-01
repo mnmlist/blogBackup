@@ -16,7 +16,6 @@ import org.htmlparser.tags.LinkTag;
 import org.htmlparser.tags.Span;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
-import org.htmlparser.util.SimpleNodeIterator;
 
 /**
  * @author mnmlist@163.com
@@ -329,7 +328,7 @@ public class ParseTool
 		List<Attribute> li = blogInfo.getColumArticleList().asList();
 		for (int i = 0; i < li.size(); i++)
 		{
-			String titleName = (String) li.get(i).getName();
+			String titleName = li.get(i).getName();
 			HandleTool.handleHtml(titleName, (String) li.get(i).getValue(),
 					blogInfo);
 			try

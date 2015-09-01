@@ -28,7 +28,7 @@ public class BackupSystemBegin
 		Scanner scanner=new Scanner(System.in);
 		type=scanner.nextInt();
 		scanner.close();
-		File urlFile=new File("url.txt");
+		File urlFile=new File("url/url.txt");
 		//read the url from the url.txt,there is a thread corresponded to a url
 		BufferedReader fileReader=null;
 		try

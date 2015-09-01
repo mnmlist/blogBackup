@@ -221,7 +221,7 @@ public class ParseTool {
 		/* 慢一点，否则会被认为是恶意行为 */
 		List<Attribute> li =blogInfo.getColumArticleList().asList();
 		for (int i = 0; i < li.size(); i++) {
-			String titleName=(String)li.get(i).getName();
+			String titleName=li.get(i).getName();
 			HandleTool.handleHtml(titleName, (String) li.get(i).getValue(),blogInfo);
 			try {
 				/* 慢一点，否则会被认为是恶意行为 */

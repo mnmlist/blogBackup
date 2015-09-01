@@ -1,7 +1,6 @@
 package com.mnmlist.backup.byTotal;
 
 import org.htmlparser.Parser;
-import org.htmlparser.util.ParserException;
 
 /**
  * @author mnmlist@163.com
