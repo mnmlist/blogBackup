@@ -145,18 +145,18 @@ public class FileTool {
 		PD4ML pd4ml = new PD4ML();
 		//Ò³Ã¼
 		PD4PageMark headerMark = new PD4PageMark();
-		headerMark.setAreaHeight(30);
+		headerMark.setAreaHeight(20);
 //		headerMark.setInitialPageNumber(1);
 //		headerMark.setPagesToSkip(1);
 //		headerMark.setTitleAlignment(PD4PageMark.CENTER_ALIGN);
-		headerMark.setHtmlTemplate("By mnmlist,"+new Date().toLocaleString()); // autocompute
+		//headerMark.setHtmlTemplate("By mnmlist,"+new Date().toLocaleString()); // autocompute
 		pd4ml.setPageHeader(headerMark);
 		//Ò³½Å
 		PD4PageMark footerMark = new PD4PageMark();
-		footerMark.setAreaHeight(30);
+		footerMark.setAreaHeight(20);
 		footerMark.setInitialPageNumber(1);
 		footerMark.setPagesToSkip(1);
-		footerMark.setPageNumberTemplate( "page: $[page]" );
+		footerMark.setPageNumberTemplate( "By mnmlist,"+new Date().toLocaleString()+".              page: $[page]" );
 		footerMark.setPageNumberAlignment( PD4PageMark.RIGHT_ALIGN);
 		footerMark.setFont(footerMark.getFont());
 		pd4ml.setPageFooter(footerMark);

@@ -355,11 +355,11 @@ public class ParseTool
 		//将整个月份的博客文章转换成pdf文件
 		try
 		{
-			//将pdf文件整合到用户名目录下的pdf子目录下
+			//将pdf文件整合到用户名目录下
 			File file=new File(filepath);
 			file=file.getParentFile();
-			FileTool.makeDir(file.getPath()+"/pdf");
-			fileNameString=file.getPath()+"/pdf/"+fileNameString;
+			//FileTool.makeDir(file.getPath()+"/pdf");
+			fileNameString=file.getPath()+"/"+fileNameString;
 			FileTool.generatePDF(htmlString,fileNameString);
 		} catch (Exception e)
 		{
