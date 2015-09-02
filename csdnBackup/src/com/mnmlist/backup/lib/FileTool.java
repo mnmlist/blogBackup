@@ -165,11 +165,11 @@ public class FileTool {
 		PD4ML pd4ml = new PD4ML();
 		//Ò³Ã¼
 		PD4PageMark headerMark = new PD4PageMark();
-		headerMark.setAreaHeight(25);
+		headerMark.setAreaHeight(30);
 		pd4ml.setPageHeader(headerMark);
 		//Ò³½Å
 		PD4PageMark footerMark = new PD4PageMark();
-		footerMark.setAreaHeight(25);
+		footerMark.setAreaHeight(30);
 		footerMark.setInitialPageNumber(1);
 		footerMark.setPagesToSkip(1);
 		footerMark.setPageNumberTemplate( "By mnmlist,Page: $[page]" );
