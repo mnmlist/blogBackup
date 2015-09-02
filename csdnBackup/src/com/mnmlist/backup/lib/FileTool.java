@@ -1,4 +1,4 @@
-package com.mnmlist.backup.byColum;
+package com.mnmlist.backup.lib;
 
 
 import java.io.BufferedReader;
@@ -26,6 +26,9 @@ import org.zefer.pd4ml.PD4PageMark;
  * @version v1.0
  */
 public class FileTool {
+	static String startBeforeTitle="<html>\r\n<head><title>";
+	static String startAfterTitleString="</title></head>\r\n<body>\r\n";
+	static String endString="</body>\r\n</html>";
 	static String proxy_addr = null;
 	static int proxy_port = 3128;
 	/*
@@ -57,7 +60,7 @@ public class FileTool {
 			} else {
 				conn = (HttpURLConnection) surl.openConnection();
 			}
-			/* 必须加上这一句伪装成Mozilla浏览器，否则CSDN会拒绝连接 */
+			//伪装成Mozilla浏览器 
 			conn.setRequestProperty("User-Agent", "Mozilla/4.0");
 			conn.connect();
 			try {
@@ -109,7 +112,24 @@ public class FileTool {
 		}
 		return true;
 	}
-
+	
+	/**
+	 * @param path the location where the html file stores
+	 * @param title the title of the html article
+	 * @param htmlString the String content of html file
+	 */
+	public static void writeFile(String path, String title,String htmlString) {
+		StringBuilder htmlStringBuilder=new StringBuilder();
+		htmlStringBuilder.append(startBeforeTitle);
+		htmlStringBuilder.append(title);
+		htmlStringBuilder.append(startAfterTitleString);
+		htmlStringBuilder.append(htmlString);
+		htmlStringBuilder.append(endString);
+		htmlString=htmlStringBuilder.toString();
+		boolean isSuccess=writeFile(path+"/"+title, htmlString.getBytes());
+		if(!isSuccess)
+			System.out.println("An error occurs when store html file to disk.");
+	}
 	/*
 	 * @param path 目录路径
 	 * 
@@ -145,25 +165,21 @@ public class FileTool {
 		PD4ML pd4ml = new PD4ML();
 		//页眉
 		PD4PageMark headerMark = new PD4PageMark();
-		headerMark.setAreaHeight(20);
-//		headerMark.setInitialPageNumber(1);
-//		headerMark.setPagesToSkip(1);
-//		headerMark.setTitleAlignment(PD4PageMark.CENTER_ALIGN);
-		//headerMark.setHtmlTemplate("By mnmlist,"+new Date().toLocaleString()); // autocompute
+		headerMark.setAreaHeight(25);
 		pd4ml.setPageHeader(headerMark);
 		//页脚
 		PD4PageMark footerMark = new PD4PageMark();
-		footerMark.setAreaHeight(20);
+		footerMark.setAreaHeight(25);
 		footerMark.setInitialPageNumber(1);
 		footerMark.setPagesToSkip(1);
-		footerMark.setPageNumberTemplate( "By mnmlist,"+new Date().toLocaleString()+".              page: $[page]" );
+		footerMark.setPageNumberTemplate( "By mnmlist,Page: $[page]" );
 		footerMark.setPageNumberAlignment( PD4PageMark.RIGHT_ALIGN);
 		footerMark.setFont(footerMark.getFont());
 		pd4ml.setPageFooter(footerMark);
 		//选择纸张大小、字库目录、字体等
 		pd4ml.setPageSize(PD4Constants.A4);
 		pd4ml.useTTF("java:fonts", true);
-        pd4ml.setDefaultTTFs("simhei", "Georgia", "consolas"); 
+        pd4ml.setDefaultTTFs("microsoft yahei", "Georgia", "consolas"); 
 		pd4ml.enableDebugInfo();
 		pd4ml.render(new StringReader(contents), fos);
 		System.out.println("Success!");

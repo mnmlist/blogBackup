@@ -5,12 +5,14 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 
 import javax.management.Attribute;
+
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
 import org.htmlparser.Parser;
 import org.htmlparser.tags.Div;
 import org.htmlparser.util.NodeList;
 
+import com.mnmlist.backup.lib.*;
 /**
  * @author mnmlist@163.com
  * @blog http://blog.csdn.net/mnmlist
@@ -92,7 +94,7 @@ public class HandleTool {
 			StringBuilder blogIndexBuilder=new StringBuilder();
 			htmlheaderBulider.append("<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>CSDNÎÄÕÂ¹éµµ</title></head><body bgcolor=\"white\" text=\"black\" link=\"#0000FF\" vlink=\"#840084\" alink=\"#0000FF\"><hr></div><div><h1 class=\"title\"><a name=\"id2747881\"></a>");
 			htmlheaderBulider.append(dir);
-			htmlheaderBulider.append("CSDNÎÄÕÂ¹éµµ</h1></div></div><hr></div><div class=\"toc\"><p><b>Ä¿Â¼</b></p><dl><dt><span class=\"preface\"><a href=\"preface.html\">ÕªÒª</a></span></dt>");
+			htmlheaderBulider.append("CSDNÎÄÕÂ¹éµµ</h1></div></div><hr></div><div class=\"toc\"><p><b>Ä¿Â¼</b></p>");
 			List<Attribute> li =blogInfo.getDirIndexList().asList();
 			for (int i = 0; i < li.size(); i++) {
 				blogIndexBuilder.append("<dt><span class=\"part\"><a href=\"");

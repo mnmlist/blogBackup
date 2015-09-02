@@ -18,6 +18,7 @@ import org.htmlparser.tags.Span;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
+import com.mnmlist.backup.lib.*;
 /**
  * @author mnmlist@163.com
  * @blog http://blog.csdn.net/mnmlist
