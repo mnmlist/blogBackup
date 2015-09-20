@@ -20,6 +20,7 @@
 	http://blog.csdn.net/fumier
 	http://blog.csdn.net/chenhanzhun
 	http://blog.csdn.net/sheepmu
+	......
 	
      2.backup the blog by tag,you can type the url and the tag as below,the url and the 
    tag are splited by the spaces.
@@ -27,10 +28,11 @@
 	http://blog.csdn.net/fumier Linux
 	http://blog.csdn.net/mnmlist jiudu
 	http://blog.csdn.net/mnmlist leetcode
+	......
 	
      3.backup the blog by the colum,you can type the url of colums as below:
 	http://blog.csdn.net/column/details/cq-struts2.html
 	http://blog.csdn.net/column/details/javaleetcodesol.html
 	http://blog.csdn.net/column/details/linux----unix.html
-
+	......
 
